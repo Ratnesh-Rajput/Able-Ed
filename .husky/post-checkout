@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+. "$(dirname "$0")/common.sh"
+
+TMP_FILE=$(git rev-parse --path-format=absolute --git-dir)/commit-skip
+
+if [ -f $TMP_FILE ]; then
+	echo 'Restoring prepare-commit-msg hook'
+	rm $TMP_FILE
+fi

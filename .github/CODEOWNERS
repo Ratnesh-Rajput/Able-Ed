@@ -1,0 +1,9 @@
+* @100Devs-ADHD/core-dev
+
+# architecture files
+
+package.json @100Devs-ADHD/architecture
+pnpm-lock.yaml @100Devs-ADHD/architecture
+.* @100Devs-ADHD/architecture
+.husky/ @100Devs-ADHD/architecture
+.github/ @100Devs-ADHD/architecture

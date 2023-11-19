@@ -1,0 +1,59 @@
+{
+	"folders": [
+		{
+			"name": "✨ @100devs-adhd/think-big",
+			"path": "."
+		}
+	],
+	"settings": {
+		"[prisma]": {
+			"editor.defaultFormatter": "Prisma.prisma"
+		},
+		"cSpell.words": ["adhd", "thinkbig"],
+		"docthis.includeAuthorTag": true,
+		"docthis.includeDateTag": true,
+		"docthis.includeDescriptionTag": true,
+		"docthis.inferTypesFromNames": true,
+		"editor.codeActionsOnSave": {
+			"source.fixAll": true
+		},
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnPaste": true,
+		"editor.formatOnSave": true,
+		"editor.formatOnType": true,
+		"eslint.alwaysShowStatus": true,
+		"eslint.packageManager": "pnpm",
+		"eslint.useESLintClass": true,
+		"exportall.config.folderListener": [
+			"/src/components",
+			"/mockdata",
+			"/src/style",
+			"/src/components/GlobalModals",
+			"/src/lib/db",
+			"/src/lib/externalAPI",
+			"/src/lib",
+			"/src/lib/db/queries",
+			"/src/lib/db/validations",
+			"/src/hooks",
+			"/src/components/serviceIcons"
+		],
+		"exportall.config.includeFoldersToExport": false,
+		"exportall.config.message": "Automatically generated index file by: https://marketplace.visualstudio.com/items?itemName=eliostruyf.vscode-typescript-exportallmodules",
+		"exportall.config.relExclusion": ["/src/pages", "/src/lib/httpResponse.ts"],
+		"exportall.config.semis": false,
+		"git.autofetch": true,
+		"git.showActionButton": {
+			"commit": false,
+			"publish": true,
+			"sync": true
+		},
+		"git.showCommitInput": false,
+		"git.terminalGitEditor": true,
+		"githubIssues.issueBranchTitle": "${user}/${issueNumber}-${sanitizedIssueTitle}",
+		"githubPullRequests.useReviewMode": {
+			"closed": false,
+			"merged": false
+		},
+		"typescript.tsdk": "./node_modules/typescript/lib"
+	}
+}

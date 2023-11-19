@@ -1,0 +1,42 @@
+{
+	"configurations": [
+		{
+			"name": "Launch Chrome",
+			"request": "launch",
+			"type": "chrome",
+			"url": "http://localhost:3000",
+			"webRoot": "${workspaceFolder}"
+		},
+		{
+			"name": "Launch Brave",
+			"port": 9222,
+			"request": "launch",
+			"runtimeArgs": ["--user-data-dir=${userHome}/.brave-dev-profile"],
+			"runtimeExecutable": "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+			"type": "chrome",
+			"url": "http://localhost:3000",
+			"userDataDir": true,
+			"webRoot": "${workspaceFolder}",
+			"sourceMaps": true,
+			"disableNetworkCache": true
+		},
+		{
+			"name": "Launch Dev Server",
+			"type": "node-terminal",
+			"request": "launch",
+			"command": "pnpm dev",
+			"sourceMaps": true,
+			"skipFiles": ["<node_internals>/**"],
+			"smartStep": true,
+			"internalConsoleOptions": "openOnSessionStart",
+			"autoAttachChildProcesses": true
+		}
+	],
+	"compounds": [
+		{
+			"name": "Launch server & Brave browser",
+			"configurations": ["Launch Dev Server", "Launch Brave"],
+			"stopAll": true
+		}
+	]
+}

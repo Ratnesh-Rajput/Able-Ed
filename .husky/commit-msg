@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+. "$(dirname "$0")/common.sh"
+
+REBASE="$(git rev-parse --path-format=relative --git-dir)/rebase-*"
+
+if [ -d $REBASE ]; then
+	echo 'Rebase in progress - Skipping..'
+	exit 0
+fi
+
+npx commitlint --edit

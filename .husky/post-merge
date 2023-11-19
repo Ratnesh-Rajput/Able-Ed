@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+. "$(dirname "$0")/common.sh"
+
+TMP_FILE=$(git rev-parse --path-format=absolute --git-dir)/commit-skip
+
+if [ -f $TMP_FILE ]; then
+	echo 'Restoring prepare-commit-msg hook'
+	rm $TMP_FILE
+fi
+
+
+check_changed() {
+	if git diff HEAD^ HEAD --exit-code -- $1; then
+	echo "📦 No change to $1"
+else
+	echo "📦 $1 has been modified, executing $2"
+	eval "$2"
+fi
+}
+
+# Run `pnpm install` if package.json changed.
+check_changed package.json "pnpm install"
+

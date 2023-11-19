@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+. "$(dirname "$0")/common.sh"
+
+REBASE="$(git rev-parse --path-format=relative --git-dir)/rebase-*"
+
+
+lint() {
+ trap 'exit $?' EXIT
+ npx commitlint --edit $1 > /dev/tty
+}
+# if [ -d $REBASE ]; then
+	# echo 'Rebase in progress - Checking Commitlint'
+	if $(lint $1)
+	then
+		echo "Commitlint passed!"
+		exit 0
+	else
+		echo "Commitlint failed - Routing to Commitizen"
+	fi 
+# fi
+
+exec < /dev/tty && npx czg --hook || true

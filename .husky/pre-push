@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+. "$(dirname "$0")/common.sh"
+
+
+protected_branches=('origin/develop' 'main' 'develop')
+current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+ 
+for branch in "${protected_branches[@]}"
+do
+    if [ $branch = $current_branch ]; then
+				echo "╭―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――╮"
+        echo "│       You're about to push to a protected branch!           │"
+				echo "│ Please ensure you are pushing to an issue-based branch in   │"
+				echo "│ the format of: YourName/##-short-description where ## is    │"
+				echo "│ the Issue number.                                           │"
+				echo "╰―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――╯"
+				echo ""
+				echo "  Error: $branch is a protected branch"
+				echo ""
+        exit 1
+    fi
+done
+exit 0

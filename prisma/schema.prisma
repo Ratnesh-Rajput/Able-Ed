@@ -1,0 +1,236 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+// Next-Auth - DO NOT MODIFY
+model Account {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?   @db.String
+  access_token       String?   @db.String
+  id_token           String?   @db.String
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
+  createdAt          DateTime? @default(now())
+  updatedAt          DateTime? @updatedAt
+
+  @@unique([provider, providerAccountId])
+}
+
+// Next-Auth - DO NOT MODIFY
+model Session {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String    @unique
+  userId       String
+  expires      DateTime
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime? @updatedAt
+}
+
+// Next-Auth - DO NOT MODIFY
+model VerificationToken {
+  identifier String   @id @default(auto()) @map("_id") @db.ObjectId
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Next-Auth & Custom - Be careful with modifications.
+model User {
+  id                  String                @id @default(auto()) @map("_id") @db.ObjectId
+  discordId           String
+  discordTag          String
+  name                String
+  email               String                @unique
+  emailVerified       DateTime?
+  image               String
+  createdAt           DateTime?             @default(now())
+  updatedAt           DateTime?             @updatedAt
+  accounts            Account[]
+  sessions            Session[]
+  //custom fields
+  userDisabled        Boolean               @default(false)
+  serverMember        Boolean               @default(false)
+  assignmentStatus    AssignmentStatus[]    @relation(fields: [assignmentId], references: [id])
+  assignmentId        String[]              @db.ObjectId
+  classStatuses       ClassStatus[]
+  assignmentOverrides AssignmentUserProps[]
+  classes             ClassUserProps[]
+  checkedInClasses    CheckinTweet[]        @relation(fields: [checkedInClassesId], references: [id])
+  checkedInClassesId  String[]              @db.ObjectId
+  role                UserRole              @default(USER)
+
+  @@unique([id, assignmentOverrides.assignmentId])
+  @@unique([id, classes.classId])
+}
+
+type AssignmentUserProps {
+  assignmentId    String    @db.ObjectId
+  dueDateOverride DateTime?
+  submitDate      DateTime?
+  status          Progress
+  notes           String
+}
+
+type ClassUserProps {
+  classId String   @db.ObjectId
+  notes   String[]
+}
+
+enum ClassStatusEnum {
+  not_started
+  in_progress
+  done
+}
+
+enum Progress {
+  to_do
+  in_progress
+  complete
+}
+
+enum UserRole {
+  USER
+  MOD
+  ADMIN
+}
+
+// Classes
+model Class {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  classNum      Int
+  cohort        String
+  date          DateTime
+  description   String
+  tags          Tag[]          @relation(fields: [tagId], references: [id])
+  tagId         String[]       @db.ObjectId
+  assignments   Assignment[]   @relation(fields: [assignmentIds], references: [id])
+  assignmentIds String[]       @db.ObjectId
+  materialLinks MaterialLink[]
+  checkinTweet  CheckinTweet?
+  vod           ClassVOD[]
+  slidesUrl     String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  classStatus   ClassStatus[]
+}
+
+type MaterialLink {
+  url  String
+  type MaterialType
+}
+
+enum MaterialType {
+  Starter
+  Solution
+}
+
+model Tag {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  classes      Class[]      @relation(fields: [classId], references: [id])
+  classId      String[]     @db.ObjectId
+  assignments  Assignment[] @relation(fields: [assignmentId], references: [id])
+  assignmentId String[]     @db.ObjectId
+  tag          String       @unique
+  color        String
+  active       Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model ClassVOD {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  class      Class          @relation(fields: [classId], references: [id])
+  classId    String         @db.ObjectId
+  service    VODservice
+  url        String
+  timestamps VODtimestamps?
+  createdAt  DateTime?      @default(now())
+  updatedAt  DateTime?      @updatedAt
+}
+
+enum VODservice {
+  Twitch
+  YouTube
+}
+
+type VODtimestamps {
+  time        String
+  description String
+  jumpUrl     String
+}
+
+// Assignments
+model Assignment {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  class            Class[]           @relation(fields: [classId], references: [id])
+  classId          String[]          @db.ObjectId
+  dateAssigned     DateTime
+  dateDue          DateTime
+  name             String
+  description      String
+  resources        AssignResource[]
+  tags             Tag[]             @relation(fields: [tagId], references: [id])
+  tagId            String[]          @db.ObjectId
+  submitUrl        String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  assignmentStatus AssignmentStatus?
+}
+
+type AssignResource {
+  title       String
+  url         String
+  description String
+}
+
+// Intersecting tables that show which users have completed assignments/classes
+model AssignmentStatus {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  assignmentId String     @unique @db.ObjectId
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  user         User[]     @relation(fields: [userId], references: [id])
+  userId       String[]   @db.ObjectId
+  createdAt    DateTime?  @default(now())
+  updatedAt    DateTime?  @updatedAt
+}
+
+model ClassStatus {
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  classId   String          @db.ObjectId
+  class     Class           @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String          @db.ObjectId
+  status    ClassStatusEnum
+  createdAt DateTime?       @default(now())
+  updatedAt DateTime?       @updatedAt
+
+  @@unique([classId, userId])
+}
+
+model CheckinTweet {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  url              String
+  class            Class     @relation(fields: [classId], references: [id])
+  classId          String    @unique @db.ObjectId
+  checkedInUsers   User[]    @relation(fields: [checkedInUsersId], references: [id])
+  checkedInUsersId String[]  @db.ObjectId
+  createdAt        DateTime? @default(now())
+  updatedAt        DateTime? @updatedAt
+}
